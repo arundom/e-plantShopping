@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
-import { addItem } from './CartSlice';
+import { addItem} from './CartSlice';
 import { useDispatch } from 'react-redux'; // Add this import
 
 function ProductList({ onHomeClick }) {
@@ -247,6 +247,9 @@ function ProductList({ onHomeClick }) {
                 ...prevState, // Spread the previous state to retain existing entries
                 [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
             }));
+
+            
+
     };
 
     const handleHomeClick = (e) => {
@@ -268,6 +271,14 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+
+    const handleRemoveFromCart = (itemName) => {
+        setAddedToCart(prevState => ({
+          ...prevState,
+          [itemName]: false // Set to false to re-enable the button
+        }));
+      };
+      
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -293,27 +304,34 @@ function ProductList({ onHomeClick }) {
                  
                     {plantsArray.map((category, index) => ( // Loop through each category in plantsArray
                             <div key={index}> {/* Unique key for each category div */}
+                                
                                 <h1>
-                                <div>{category.category}</div> {/* Display the category name */}
+                                    <div>{category.category}</div> {/* Display the category name */}
                                 </h1>
+
                                 <div className="product-list"> {/* Container for the list of plant cards */}
                                 {category.plants.map((plant, plantIndex) => ( // Loop through each plant in the current category
+                                    
                                     <div className="product-card" key={plantIndex}> {/* Unique key for each plant card */}
+                                    
                                     <img 
                                         className="product-image" 
                                         src={plant.image} // Display the plant image
                                         alt={plant.name} // Alt text for accessibility
                                     />
+                                    
                                     <div className="product-title">{plant.name}</div> {/* Display plant name */}
                                     {/* Display other plant details like description and cost */}
                                     <div className="product-description">{plant.description}</div> {/* Display plant description */}
                                     <div className="product-cost">${plant.cost}</div> {/* Display plant cost */}
-                                    <button
-                                        className="product-button"
-                                        onClick={() => handleAddToCart(plant)} // Handle adding plant to cart
-                                    >
-                                        Add to Cart
+                                    
+                                    {/* <button className="product-button" onClick={() => handleAddToCart(plant)} disabled={!!addedToCart[plant.name]}  > */}
+                                    <button className={`product-button${addedToCart[plant.name] ? '.added-to-cart ' : ''}`} onClick={() => handleAddToCart(plant)} disabled={!!addedToCart[plant.name]}  >   
+                                         {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
                                     </button>
+
+                                    
+                                    
                                     </div>
                                 ))}
                                 </div>
@@ -322,7 +340,10 @@ function ProductList({ onHomeClick }) {
 
                 </div>
             ) : (
-                <CartItem onContinueShopping={handleContinueShopping} />
+                <CartItem 
+                  onContinueShopping={handleContinueShopping} 
+                  onRemoveFromCart={handleRemoveFromCart}
+                />
             )}
         </div>
     );
