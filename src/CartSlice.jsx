@@ -23,11 +23,22 @@ export const CartSlice = createSlice({
   },
 
     removeItem: (state, action) => {
+      const itemNameToRemove = action.payload; // Get the name of the item to remove from the action payload
+      // Filter out the item with the specified name
+      state.items = state.items.filter(item => item.name !== itemNameToRemove);
     },
   
   
     updateQuantity: (state, action) => {
-  
+        
+      const { name, quantity } = action.payload; // Destructure the product name and new quantity from the action payload
+      
+      // Find the item in the cart that matches the given name
+      const itemToUpdate = state.items.find(item => item.name === name);
+        
+        if (itemToUpdate) {
+          itemToUpdate.quantity = quantity; // If the item is found, update its quantity to the new value
+        }  
     },
   },
 });
